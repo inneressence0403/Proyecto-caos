@@ -1,4 +1,7 @@
 import collections
+alive = "O"
+dead = "."
+#agrega una clase life_grid con funcionalidades __init__, evolve, as_string y __str
 class life_grid:
     def __init__(self, pattern): #inicializa el grid con un patron dado
         self.pattern = pattern
@@ -17,12 +20,18 @@ class life_grid:
         stay_alive = {cell for cell in self.pattern.alive_cells if num_neighbors[cell] in (2, 3)}
         come_alive = {cell for cell, count in num_neighbors.items() if count == 3 and cell not in self.pattern.alive_cells}
         self.pattern.alive_cells = stay_alive | come_alive
-        pass
+        
     def as_string(self,bbox): #devuelve una representacion en string del grid
-        pass
+        start_row, start_col, end_row, end_col = bbox
+        display = [self.pattern.name.center(2*(end_col - start_col))]
+        for row in range(start_row, end_row):
+            display = [alive if (row,col) in self.pattern.alive_celss else dead
+                       for col in range(start_col, end_col)]
+            display.append(" ".join(display_row))
+            return "\n ".join(display)
+
     def __str__(self): #devuelve una representacion en string del grid
         return (
             f"{self.pattern.name}:\n"
             f"Alive cells -> {sorted(self.pattern.alive_cells)}"
-        )
-    pass     
+        )     
