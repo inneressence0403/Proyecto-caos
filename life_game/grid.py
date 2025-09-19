@@ -21,5 +21,8 @@ class life_grid:
     def as_string(self,bbox): #devuelve una representacion en string del grid
         pass
     def __str__(self): #devuelve una representacion en string del grid
-        return self.as_string(bbox=None)
-        pass
+        return (
+            f"{self.pattern.name}:\n"
+            f"Alive cells -> {sorted(self.pattern.alive_cells)}"
+        )
+    pass     
