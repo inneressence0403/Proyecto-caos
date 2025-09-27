@@ -1,39 +1,43 @@
 import collections
-ALIVE = "♥"
-DEAD = "."
-#agrega una clase LifeGrid con funcionalidades __init__, evolve, as_string y __str
-class LifeGrid:
-    def __init__(self, pattern): #inicializa el grid con un patron dado
-        self.pattern = pattern
-    def evolve(self): #calcula la siguiente generacion
-        neighbors = {
-            (-1,-1),(-1,0),(-1,1),
-            (0,-1),       (0,1),
-            (1,-1),(1,0),(1,1)
-            }
-        num_neighbors = collections.defaultdict(int)
-        for row, col in self.pattern.alive_cells:
-            for dr, dc in neighbors:
-                num_neighbors[row + dr, col + dc] += 1 
-                 
-        #condiciones de nacimiento y supervivencia
-        stay_alive = {cell for cell in self.pattern.alive_cells if num_neighbors[cell] in (2, 3)}
-        come_alive = {cell for cell, count in num_neighbors.items() if count == 3 and cell not in self.pattern.alive_cells}
-        self.pattern.alive_cells = stay_alive | come_alive
+import pygame
+ALIVE = 1
+DEAD = 0
+class Grid:
+    def __init__(self, width, height, cell_zize): #inicializa el grid
+        self.pattern = None
+        self.rows = height // cell_zize
+        self.cols = width // cell_zize
+        self.cell_size = cell_zize
+        self.cells = [[DEAD for _ in range(self.cols)] for _ in range(self.rows)]
+    
+    def draw(self, screen): #dibuja el grid
+        for row in range(self.rows):
+            for col in range(self.cols):
+                color = (255, 255, 255) if self.cells[row][col] else (55, 55, 55)
+                pygame.draw.rect(screen, color, (col * self.cell_size, row * self.cell_size, self.cell_size -1, self.cell_size -1))
+    def evolve(self):  # calcula la siguiente generación
+        neighbors = [
+            (-1, -1), (-1, 0), (-1, 1),
+            (0, -1),           (0, 1),
+            (1, -1), (1, 0), (1, 1)
+        ]
+        new_cells = [[DEAD for _ in range(self.cols)] for _ in range(self.rows)]
+        for row in range(self.rows):
+            for col in range(self.cols):
+                live_neighbors = 0
+                for dr, dc in neighbors:
+                    r = (row + dr) % self.rows
+                    c = (col + dc) % self.cols
+                    if self.cells[r][c] == ALIVE:
+                        live_neighbors += 1
+                if self.cells[row][col] == ALIVE:
+                    if live_neighbors in (2, 3):
+                        new_cells[row][col] = ALIVE
+                    else:
+                        new_cells[row][col] = DEAD
+                else:
+                    if live_neighbors == 3:
+                        new_cells[row][col] = ALIVE
+        self.cells = new_cells
         
-    def as_string(self,bbox): #devuelve una representacion en string del grid
-        start_col, start_row, end_col, end_row = bbox
-        display = [self.pattern.name.center(2 * (end_col - start_col))]
-        for row in range(start_row, end_row):
-            display_row = [
-            ALIVE if (row, col) in self.pattern.alive_cells else DEAD
-            for col in range(start_col, end_col)
-            ]
-            display.append(" ".join(display_row))
-        return "\n".join(display)
-    def __str__(self): #devuelve una representacion en string del grid
-       return (
-            f"{self.pattern.name}:\n"
-            f"Alive cells -> {sorted(self.pattern.alive_cells)}"
-        )
-      
+   
