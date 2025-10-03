@@ -3,11 +3,12 @@ import pygame
 ALIVE = 1
 DEAD = 0
 class Grid:
-    def __init__(self, width, height, cell_zize): #inicializa el grid
+    def __init__(self, width, height, cell_size): #inicializa el grid
         self.pattern = None
-        self.rows = height // cell_zize
-        self.cols = width // cell_zize
-        self.cell_size = cell_zize
+        #Creación de atributos
+        self.rows = height // cell_size
+        self.cols = width // cell_size
+        self.cell_size = cell_size
         self.cells = [[DEAD for _ in range(self.cols)] for _ in range(self.rows)]
     
     def draw(self, screen): #dibuja el grid
